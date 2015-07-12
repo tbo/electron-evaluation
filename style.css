@@ -1,0 +1,18 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    overflow: hidden;
+    padding: 0px;
+}
+
+html, body, #dimension-element {
+    font-family: "Inconsolata for Powerline", monospace;
+    font-size: 14px;
+}
+
+.tile {
+    display: block;
+    float: right;
+        margin: 1px;
+}

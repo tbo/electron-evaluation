@@ -1,10 +1,9 @@
 var Terminal = require('term.js');
-var remote = require('remote');
-var Pty = remote.require('./apps/term/pty');
+var childPty = require('child_pty');
 var _ = require('lodash');
 
 var pty = null;
-var term = null;
+var terminalWindow = null;
 var charWidth = null;
 var charHeight = null;
 
@@ -32,38 +31,29 @@ function createTerminalWindow() {
     var columns = getColumnCount();
     var rows = getRowCount();
 
-    function write(string) {
-        term.write(string);
-    }
-
-    term = new Terminal({
+    terminalWindow = new Terminal({
         columns: columns,
         rows: rows//,
         // screenKeys: true
     });
 
-    term.open(document.body);
+    terminalWindow.open(document.body);
 
-    pty = new Pty(write, columns, rows);
+    pty = childPty.spawn('bash', [], {columns: columns, rows: rows});
+    pty.stdout.on('data', function (msg) {
+        terminalWindow.write(msg.toString());
+    });
 
-    // term.dom(document.getElementById('console')).pipe({
-    //     on: function(input) { console.log('TEST', input);},
-    //     once: function(input) { console.log('TEST', input);},
-    //     write: function(input) {pty.write(input.toString()); },
-    //     emit: function(input) { console.log('TEST', input);}
-    // });
-    term.on('key', function (key, event) {
-        if (event.type !== 'keypress' || event.keyCode !== 13) {
-            pty.write(key);
-        }
+    terminalWindow.on('key', function (key) {
+        pty.stdin.write(key);
     });
 }
 
 function resize() {
     var columns = getColumnCount();
     var rows = getRowCount();
-    term.resize(columns, rows);
-    pty.resize(columns, rows);
+    terminalWindow.resize(columns, rows);
+    pty.stdout.resize({columns: columns, rows: rows});
 }
 
 window.addEventListener('resize', _.throttle(resize, 500));

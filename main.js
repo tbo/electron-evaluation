@@ -14,11 +14,10 @@ app.on('window-all-closed', function() {
 // initialization and ready for creating browser windows.
 app.on('ready', function() {
     mainWindow = new BrowserWindow({width: 1024, height: 768});
-    function reload() {
-        mainWindow.reload();
-    }
     // mainWindow.openDevTools();
-    watcher.on('change', reload);
+    watcher.on('change', function () {
+        mainWindow.reload();
+    });
     // and load the index.html of the app.
     mainWindow.loadUrl(path.join('file://', __dirname, '/index.html'));
     // Emitted when the window is closed.

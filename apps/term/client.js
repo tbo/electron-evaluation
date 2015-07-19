@@ -1,11 +1,11 @@
 var Terminal = require('term.js');
 var childPty = require('child_pty');
 var _ = require('lodash');
-
 var pty = null;
 var terminalWindow = null;
 var charWidth = null;
 var charHeight = null;
+var ipc = require('ipc');
 
 var dimensionElement = document.createElement('span');
 var dimensionText = document.createTextNode('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM');
@@ -44,6 +44,10 @@ function createTerminalWindow() {
         terminalWindow.write(msg.toString());
     });
 
+    pty.stdout.on('end', function () {
+        window.close();
+    });
+
     terminalWindow.on('key', function (key) {
         pty.stdin.write(key);
     });
@@ -57,6 +61,15 @@ function resize() {
 }
 
 window.addEventListener('resize', _.throttle(resize, 500));
+
+window.addEventListener('unload', function () {
+    pty.kill('SIGHUP');
+});
+//TODO Remove this once the following issue is resolved:
+// https://github.com/atom/electron/issues/1929
+ipc.on('unload', function() {
+    pty.kill('SIGHUP');
+});
 
 window.addEventListener('load', function () {
     detectCharDimensions();

@@ -18,9 +18,9 @@ html, body, #dimension-element {
     line-height: 122%;
 }
 
-.reverse-video {
-      background-color: orange;
-  }
+.terminal.focus .reverse-video {
+    background-color: orange;
+}
 
 .terminal * {
     display: inline-block;

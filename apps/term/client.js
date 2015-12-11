@@ -27,6 +27,10 @@ function getRowCount() {
     return Math.floor(document.body.offsetHeight / charHeight);
 }
 
+function focusTerminal() {
+    document.querySelector('.terminal').classList.add('focus');
+}
+
 function createTerminalWindow() {
     var columns = getColumnCount();
     var rows = getRowCount();
@@ -51,6 +55,8 @@ function createTerminalWindow() {
     terminalWindow.on('key', function (key) {
         pty.stdin.write(key);
     });
+
+    focusTerminal();
 }
 
 function resize() {
@@ -62,10 +68,16 @@ function resize() {
 
 window.addEventListener('resize', _.throttle(resize, 500));
 
+window.addEventListener('focus', focusTerminal);
+
+window.addEventListener('blur', function () {
+    document.querySelector('.terminal').classList.remove('focus');
+});
+
 window.addEventListener('unload', function () {
     pty.kill('SIGHUP');
 });
-//TODO Remove this once the following issue is resolved:
+//TODO Remove this once the following issue has been resolved:
 // https://github.com/atom/electron/issues/1929
 ipc.on('unload', function() {
     pty.kill('SIGHUP');

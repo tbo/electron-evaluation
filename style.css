@@ -15,6 +15,14 @@ header {
     background-color: #ddd;
 }
 
+.desktop {
+    display: none;
+}
+
+.desktop.active {
+    display: block;
+}
+
 .desktop > .tile {
     border-style: solid;
     border-color: white;
@@ -24,6 +32,12 @@ header {
     color: white;
     background-color: black;
     box-sizing: border-box;
+    opacity: 0.90;
+    transition: opacity .2s ease-in-out;
+}
+
+.desktop > .tile.focus {
+    opacity: 1.0;
 }
 
 .desktop > .tile {
